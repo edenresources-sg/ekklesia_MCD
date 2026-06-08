@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新加坡各部門與機構 · 守望資料庫</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+TC:wght@300;400;500;700&family=IM+Fell+English:ital@0;1&family=Noto+Sans+TC:wght@400;500&display=swap&family=Oswald:wght@400;500;600&family=Roboto+Mono:wght@500" rel="stylesheet">
+<style>
+:root {
+  --gold:#C9A84C; --gold-dim:#7A5E1A; --gold-pale:#F5E9CC;
+  --deep:#090912; --navy:#0D1020; --ink:#141424; --card:#101020;
+  --border:rgba(201,168,76,.14); --text:#E8E4D8; --muted:#8A8070;
+  --green:#3A8A3A; --green-bg:#0A160A; --green-b:rgba(60,140,60,.22);
+  --blue:#2A5A9F; --blue-bg:#09101E; --blue-b:rgba(50,110,200,.22);
+  --red:#B03040; --red-bg:#160809; --red-b:rgba(150,40,55,.22);
+  --purple:#8050A0; --purple-bg:#100A18; --purple-b:rgba(120,70,160,.22);
+  --orange:#B06020; --orange-bg:#160C05; --orange-b:rgba(180,100,40,.22);
+  --teal:#208080; --teal-bg:#051414; --teal-b:rgba(30,120,120,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--deep);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.75;overflow-x:hidden}
+
+/* top bar */
+.topbar{background:var(--navy);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar-logo{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold);letter-spacing:2px}
+.topbar-sub{font-size:.68rem;color:var(--muted)}
+.topbar-date{font-size:.7rem;color:var(--muted);text-align:right}
+
+/* hero */
+.hero{background:linear-gradient(155deg,#0C1338,#160B2C,#090912);padding:28px 16px 20px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.1),transparent 65%);pointer-events:none}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(1.1rem,4vw,1.7rem);color:var(--gold);margin-bottom:4px;position:relative}
+.hero-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--muted);font-size:.82rem;position:relative}
+
+/* section nav */
+.sec-nav{display:flex;background:var(--ink);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.sec-nav::-webkit-scrollbar{display:none}
+.snav{padding:11px 14px;font-size:.73rem;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Noto Sans TC',sans-serif}
+.snav.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* panel */
+.panel{display:none;animation:fu .3s ease}
+.panel.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.main{max-width:900px;margin:0 auto;padding:14px 14px 60px}
+
+/* section label */
+.slabel{display:flex;align-items:center;gap:10px;margin:20px 0 10px;font-family:'Cinzel',serif;font-size:.67rem;letter-spacing:3px;color:var(--gold-dim);text-transform:uppercase}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ministry card */
+.mcard{border-radius:5px;margin-bottom:10px;overflow:hidden;border:1px solid var(--border)}
+.mcard-hdr{padding:13px 15px 10px;display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.mcard-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.mcard-mid{flex:1}
+.mcard-title{font-size:.87rem;color:var(--gold-pale);font-weight:500;line-height:1.4}
+.mcard-meta{font-size:.68rem;color:var(--muted);margin-top:2px}
+.mcard-tag{font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:2px;font-family:'Noto Sans TC',sans-serif}
+.t-govt{background:rgba(50,100,200,.18);color:#7099D8;border:1px solid var(--blue-b)}
+.t-corp{background:rgba(170,100,20,.18);color:#C09040;border:1px solid var(--orange-b)}
+.t-sector{background:rgba(40,120,80,.18);color:#60B080;border:1px solid var(--green-b)}
+.t-urgent{background:rgba(150,40,50,.18);color:#D06070;border:1px solid var(--red-b)}
+.t-stat{background:rgba(100,50,150,.18);color:#A070C0;border:1px solid var(--purple-b)}
+.mcard-arr{color:var(--gold-dim);font-size:.73rem;margin-top:3px;flex-shrink:0;transition:.25s}
+.mcard.open .mcard-arr{transform:rotate(180deg)}
+.mcard-body{display:none;padding:0 15px 15px;border-top:1px solid rgba(255,255,255,.04)}
+.mcard.open .mcard-body{display:block}
+
+/* challenge list */
+.challenges{margin:10px 0 12px}
+.ch-item{display:flex;gap:8px;margin-bottom:7px;font-size:.82rem;color:var(--muted);line-height:1.75}
+.ch-item strong{color:var(--text)}
+.ch-dot{color:var(--gold);flex-shrink:0;margin-top:3px;font-size:.7rem}
+
+/* stats row */
+.stats-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px}
+.stat-pill{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:3px;padding:5px 10px;font-size:.72rem;color:var(--gold-pale);line-height:1.5}
+.stat-pill b{color:var(--gold);display:block;font-size:.9rem;font-family:'Cinzel',serif}
+
+/* prayer */
+.prayer{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.16);border-radius:3px;padding:11px 13px;margin-top:2px}
+.prayer-lbl{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:2px;color:var(--gold);margin-bottom:6px}
+.prayer-txt{font-family:'IM Fell English',serif;font-style:italic;font-size:.84rem;color:var(--gold-pale);line-height:1.9}
+
+/* source */
+.src{font-size:.65rem;color:var(--muted);margin-top:7px;border-top:1px solid rgba(255,255,255,.05);padding-top:5px}
+
+/* compare table */
+.ctable{width:100%;border-collapse:collapse;margin:10px 0 12px;font-size:.78rem}
+.ctable th{background:rgba(201,168,76,.1);color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;padding:7px 9px;text-align:left;border-bottom:1px solid var(--border)}
+.ctable td{padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--muted);vertical-align:top;line-height:1.65}
+.ctable td:first-child{color:var(--text);font-weight:500;white-space:nowrap}
+.ctable tr:last-child td{border-bottom:none}
+.good{color:#5AB05A}
+.warn{color:#C09040}
+.bad{color:#C06060}
+
+/* closing box */
+.close-box{background:linear-gradient(135deg,#0E1230,#180B28);border:1px solid rgba(201,168,76,.18);border-radius:5px;padding:18px;margin:16px 0;text-align:center}
+.close-box h3{font-family:'Cinzel',serif;font-size:.72rem;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+.close-box p{font-family:'IM Fell English',serif;font-style:italic;font-size:.87rem;color:var(--gold-pale);line-height:2}
+
+/* footer */
+.footer{text-align:center;padding:20px 16px;border-top:1px solid var(--border);margin-top:16px}
+.footer-m{font-family:'Cinzel',serif;color:var(--gold);letter-spacing:4px;font-size:.88rem;margin-bottom:4px}
+.footer-s{font-size:.68rem;color:var(--muted);line-height:1.9}
+
+/* howto */
+.howto{background:rgba(201,168,76,.05);border-bottom:1px solid var(--border);padding:7px 14px;font-size:.71rem;color:var(--muted);text-align:center}
+.howto strong{color:var(--gold)}
+
+/* ── EKKLESIA REMINDER BANNER ── */
+.ekklesia-reminder {
+  background: linear-gradient(135deg, #0F1438 0%, #1A0A30 100%);
+  border-bottom: 1px solid rgba(201,168,76,.25);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.ekklesia-reminder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.reminder-title {
+  font-family: 'Cinzel', serif;
+  font-size: .7rem;
+  letter-spacing: 3px;
+  color: #7A5E1A;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  position: relative;
+}
+.reminder-body {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.reminder-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.reminder-text { flex: 1; }
+.reminder-call {
+  font-family: 'Noto Serif TC', serif;
+  font-size: .82rem;
+  color: #F5E9CC;
+  line-height: 1.85;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.reminder-call strong { color: #C9A84C; }
+.reminder-verse {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: .82rem;
+  color: rgba(245,233,204,.75);
+  line-height: 1.85;
+  border-left: 2px solid rgba(201,168,76,.35);
+  padding-left: 12px;
+}
+.reminder-verse cite {
+  display: block;
+  font-style: normal;
+  font-size: .7rem;
+  color: #7A5E1A;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-logo">🏛️ 部門與機構守望資料庫</div>
+    <div class="topbar-sub">新加坡全政府 · 企業挑戰 · Ekklesia 守望</div>
+  </div>
+  <div class="topbar-date">2026年6月</div>
+</div>
+
+<div class="hero">
+  <h1>新加坡各部門與機構守望資料庫</h1>
+  <p class="hero-sub">16個部門 · 主要法定機構 · 各行業企業挑戰 · 逐一守望禱告</p>
+</div>
+
+<!-- EKKLESIA REMINDER -->
+<div class="ekklesia-reminder">
+  <div class="reminder-title">✦ Ekklesia 的呼召 ✦</div>
+  <div class="reminder-body">
+    <div class="reminder-icon">🔥</div>
+    <div class="reminder-text">
+      <p class="reminder-call">
+        <strong>Ekklesia 是跟隨耶穌</strong>——進入每一個層面服事人群的門徒。在政府機構、職場企業、學校研究院、醫院社服中心、媒體數字空間、藝術娛樂廣場、組屋社區與每一個有人的角落——祂在哪裡，我們就在哪裡。
+      </p>
+      <p class="reminder-verse">
+        「若有人服事我、就當跟從我．我在那裡、服事我的人、也要在那裡．若有人服事我、我父必尊重他。」
+        <cite>— 約翰福音 12:26</cite>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="howto">點選分頁 → 展開每個部門或機構 → 查看<strong>挑戰與守望禱告</strong></div>
+
+<nav class="sec-nav">
+  <button class="snav active" onclick="sw(0)">📋 總覽</button>
+  <button class="snav" onclick="sw(1)">🏛️ 政府部門</button>
+  <button class="snav" onclick="sw(2)">📊 法定機構</button>
+  <button class="snav" onclick="sw(3)">🏦 金融業</button>
+  <button class="snav" onclick="sw(4)">🏭 製造與科技</button>
+  <button class="snav" onclick="sw(5)">🛍️ 零售與服務</button>
+  <button class="snav" onclick="sw(6)">🙏 整合禱告</button>
+</nav>
+
+<div class="main">
+
+<!-- ══════════════════ PANEL 0: 總覽 ══════════════════ -->
+<div class="panel active" id="p0">
+  <div class="slabel">新加坡政府架構概覽</div>
+
+  <div class="stats-row">
+    <div class="stat-pill"><b>16</b>部門（Ministries）</div>
+    <div class="stat-pill"><b>60+</b>法定機構（Statutory Boards）</div>
+    <div class="stat-pill"><b>150,000+</b>公共服務人員</div>
+    <div class="stat-pill"><b>35,000</b>公務員（Civil Servants）</div>
+    <div class="stat-pill"><b>S$370億</b>RIE 2030研究撥款</div>
+    <div class="stat-pill"><b>400%</b>AI支出稅務扣減（Budget 2026）</div>
+  </div>
+
+  <table class="ctable">
+    <tr><th>部門</th><th>縮寫</th><th>主要守望重點</th></tr>
+    <tr><td>總理公署</td><td>PMO</td><td>國家策略方向、ESR落實、公共服務改革</td></tr>
+    <tr><td>人力部</td><td>MOM</td><td>裁員保護、外籍勞工、PMET支援、AI就業政策</td></tr>
+    <tr><td>貿工部</td><td>MTI</td><td>ESR落實、AI戰略、能源轉型、產業轉型</td></tr>
+    <tr><td>數字發展及新聞部</td><td>MDDI</td><td>AI治理、媒體監管、POFMA、數字經濟</td></tr>
+    <tr><td>教育部</td><td>MOE</td><td>AI教育整合、教師壓力、學生精神健康</td></tr>
+    <tr><td>衛生部</td><td>MOH</td><td>醫護人員短缺、AI醫療倫理、老齡化服務</td></tr>
+    <tr><td>社會及家庭發展部</td><td>MSF</td><td>低收入家庭、社工支援、生育政策、弱勢保護</td></tr>
+    <tr><td>國家發展部</td><td>MND</td><td>HDB供應、住房可負擔性、城市規劃</td></tr>
+    <tr><td>可持續發展及環境部</td><td>MSE</td><td>去碳化、氣候韌性、能源轉型成本</td></tr>
+    <tr><td>文化、社區及青年部</td><td>MCCY</td><td>社區凝聚力、新移民整合、文化身份</td></tr>
+    <tr><td>內政部</td><td>MHA</td><td>國家安全、社會秩序、網絡安全</td></tr>
+    <tr><td>律政部</td><td>MinLaw</td><td>法律保護、媒體訴訟、工人權益</td></tr>
+    <tr><td>外交部</td><td>MFA</td><td>地緣政治定位、小國主權、區域整合</td></tr>
+    <tr><td>財政部</td><td>MOF</td><td>Budget 2026落實、AI稅務政策、社會支出</td></tr>
+    <tr><td>交通部</td><td>MOT</td><td>RTS影響、交通費用、物流數字化</td></tr>
+    <tr><td>國防部</td><td>MINDEF</td><td>國家安全、網絡防衛、AI軍事倫理</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════ PANEL 1: 政府部門 ══════════════════ -->
+<div class="panel" id="p1">
+
+  <div class="slabel">人力相關部門</div>
+
+  <!-- MOM -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👷</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">人力部（MOM）· Ministry of Manpower</div>
+        <div class="mcard-meta">部長：陳詩龍（Tan See Leng）· 轄下：CPF局、勞工基金、職能再培訓署</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>14,400</b>2025年全年裁員</div>
+        <div class="stat-pill"><b>10.1‰</b>PMET裁員率</div>
+        <div class="stat-pill"><b>2.8%</b>失業率（穩定）</div>
+        <div class="stat-pill"><b>77,700</b>職位空缺（2025年12月）</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>裁員通知機制改革：</strong>現行五個工作天通知期被批評過短，ESR建議提前通知，但僱主聯合會（SNEF）指出實施困難，MOM正研究最佳平衡點</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>外籍勞工保護漏洞：</strong>110萬名工作准證持有人月薪低於S$3,000，缺乏再培訓支援和精神健康援助，緬甸工人被剝削個案引發關注</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>《職場公平法》（2025年1月生效）落實：</strong>禁止就業歧視，但年齡歧視在招聘中仍普遍，執法力度受到質疑</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI衝擊監測機制：</strong>ESR建議建立AI對就業影響的系統性監測，MOM需建立新的數據收集和政策回應框架</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>SWDA成立（技能與勞動力發展局）：</strong>整合現有就業支援為一站式中心，目前正處於規劃和過渡期，落實時間表受關注</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，MOM是每一個被裁員的工人和每一個外籍勞工的最終守護者。求你讓MOM的每一位公務員，在處理每一個裁員個案、每一份外勞投訴時，看見的不只是一個档案號碼，而是一個有尊嚴、有家人的人。讓Ekklesia信徒在MOM中成為憐憫和公義的聲音。</p>
+      </div>
+      <div class="src">來源：MOM勞動市場報告（2026年3月）、國會回答、NTUC調查</div>
+    </div>
+  </div>
+
+  <!-- MTI -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">📊</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">貿易及工業部（MTI）· Ministry of Trade & Industry</div>
+        <div class="mcard-meta">部長：顏金勇（Gan Kim Yong）· 轄下：EDB、企業發展局、旅遊局等</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>2%–4%</b>2026年GDP增長預測</div>
+        <div class="stat-pill"><b>S$142億</b>2025年投資承諾</div>
+        <div class="stat-pill"><b>32項</b>ESR建議落實責任</div>
+        <div class="stat-pill"><b>S$370億</b>RIE 2030撥款監督</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>ESR 32項建議落實：</strong>MTI是主要執行部門，需在零售、製造、AI、能源等多個行業同時推動轉型，資源和人才均面臨挑戰</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>美國關稅和全球貿易碎片化：</strong>新加坡高度依賴出口，美國關稅政策持續不明朗，MTI需在保護本地企業和維持開放貿易之間取得平衡</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>中小企業AI轉型支援不足：</strong>大企業和中小企業之間的AI採用鴻溝日益擴大，MTI轄下的企業發展局需要更針對性的支援計劃</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>能源轉型成本管理：</strong>去碳化S$8億大挑戰和能源安全需求並行，MTI需確保轉型成本不轉嫁至中小企業和低收入消費者</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">父神，MTI肩負著讓新加坡在碎片化全球經濟中保持競爭力的重擔。求你讓顏金勇部長和他的團隊，在制定政策時不只看到GDP數字，也看到那些在轉型中掙扎的中小企業主和工人家庭。讓「增長惠及所有人」不只是口號，而是每一項政策落實時的衡量標準。</p>
+      </div>
+      <div class="src">來源：MTI 2026年財政撥款辯論演講、ESR最終建議（2026年5月）</div>
+    </div>
+  </div>
+
+  <div class="slabel">社會服務相關部門</div>
+
+  <!-- MSF -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👨‍👩‍👧</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">社會及家庭發展部（MSF）· Ministry of Social & Family Development</div>
+        <div class="mcard-meta">部長：馬紹基（Masagos Zulkifli）· 轄下：ECDA、NCSS、SG Enable、raiSE</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>9,000+</b>合作夥伴及義工（MSFCare網絡）</div>
+        <div class="stat-pill"><b>S$30億</b>年度預算</div>
+        <div class="stat-pill"><b>ComLink+</b>低收入家庭整合支援計劃</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>TFR 0.87的家庭支援壓力：</strong>「A Singapore Made For Families 2025」計劃推出，但生育率仍創新低，MSF需同時應對人口下滑和現有家庭的支援需求</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>低收入家庭的AI衝擊最後防線：</strong>裁員浪潮中，ComLink+計劃需應對更多尋求協助的家庭，社工人手嚴重不足</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>殘障人士社區居住模式：</strong>MSF與MND合作開發替代住房和護理模式，讓殘障人士能在社區中「就地老化」，但資源和設施仍不足</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>數字年代家庭保護：</strong>2026年全國家庭節推出「聰明使用屏幕」運動，應對兒童和青少年過度使用科技的問題，這是MSF的新挑戰領域</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，MSF的使命是「為人的熱情」（Passion for People）。求你讓這個部門的每一位社工、每一位政策制定者，真正帶著對人的熱情服事。讓ComLink+計劃不只是數字上的成功，而是真實改變了每一個低收入家庭的日常生活。讓Ekklesia成為MSF觸及不到之處的補充。</p>
+      </div>
+      <div class="src">來源：MSF官網、MSF低收入家庭趨勢報告2025</div>
+    </div>
+  </div>
+
+  <!-- MOH -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🏥</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">衛生部（MOH）· Ministry of Health</div>
+        <div class="mcard-meta">部長：符策寬（Ong Ye Kung）· 轄下：HSA、三大公立醫療集群</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>21%</b>居民65歲以上（2025年）</div>
+        <div class="stat-pill"><b>3,000-4,000</b>護士缺口</div>
+        <div class="stat-pill"><b>15%</b>輔助醫療空缺率</div>
+        <div class="stat-pill"><b>15,000</b>2030年前需增加醫護人員</div>
+        <div class="stat-pill"><b>15%+</b>護士年流失率（部分機構）</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>嚴峻人手短缺：</strong>2026年護士缺口達3,000-4,000人，輔助醫療（物理治療、職業治療等）空缺率達15%，海外招募競爭激烈（澳洲、中東積極搶人）</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>職業倦怠危機：</strong>研究顯示新加坡醫護人員職業倦怠普遍，醫生和護士的情緒耗竭比輔助醫療人員更高；部分機構護士年流失率超過15%</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI醫療應用的倫理挑戰：</strong>AI診斷、AI藥物研發迅速擴展，MOH需確保AI工具真正以病人利益為核心，而非只是效率和成本指標</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>老齡化服務壓力：</strong>21%居民65歲以上，社區護理和安老院需求激增，「就地老化」政策需要更多社區資源支援</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主耶穌，你是大醫生。求你讓MOH的政策制定者感受到每一位倦怠醫護人員背後的真實掙扎。讓薪酬和工時的改善真正落實，而非停留在承諾中。讓每一位仍在崗位上以愛服事的Ekklesia信徒醫護，知道他們是被神呼召、被神托住的守望者。</p>
+      </div>
+      <div class="src">來源：醫療招聘報告2026、BMC Primary Care研究、Healthcare Recruitment Singapore 2026</div>
+    </div>
+  </div>
+
+  <div class="slabel">數字與媒體相關部門</div>
+
+  <!-- MDDI -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">💻</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">數字發展及新聞部（MDDI）· Ministry of Digital Development & Information</div>
+        <div class="mcard-meta">部長：楊莉明（Josephine Teo）· 轄下：IMDA、CSA（網絡安全局）、GovTech</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>75%+</b>企業已整合AI（IMDA 2025）</div>
+        <div class="stat-pill"><b>第123</b>RSF新聞自由排名</div>
+        <div class="stat-pill"><b>第164</b>立法環境指標（RSF）</div>
+        <div class="stat-pill"><b>POFMA</b>持續用於媒體更正</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI治理與媒體自由的張力：</strong>MDDI同時負責推動AI發展和監管媒體，POFMA的頻繁使用引發新聞自由批評，RSF評分持續下滑</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI假訊息的識別和應對：</strong>Deepfake和AI生成虛假圖片在學校中出現，網絡安全委員會（OSC）將於2026年6月底開始運作</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>數字包容性挑戰：</strong>老年人、低收入群體在數字轉型中被邊緣化的風險，GovTech數字服務的可及性仍不足</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>《資訊通訊媒體發展局（修訂）法案》：</strong>2026年國會通過，擴大網絡內容監管權力，獨立媒體空間進一步受限</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">神啊，你是真理的神。求你讓MDDI在推動AI和數字發展的同時，也保護真實和開放的信息環境。讓Ekklesia信徒在GovTech、IMDA、CSA等機構中，成為推動科技向善、保護個人尊嚴和真實的聲音。讓媒體管制政策不成為壓制真實聲音的工具。</p>
+      </div>
+      <div class="src">來源：RSF 2026新聞自由指數、IMDA數字經濟報告2025、國會辯論記錄</div>
+    </div>
+  </div>
+
+  <div class="slabel">其他關鍵部門</div>
+
+  <!-- MOE -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🎓</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">教育部（MOE）· Ministry of Education</div>
+        <div class="mcard-meta">部長：李志鵬（Desmond Lee）· 轄下：10個法定機構含ITE、理工學院、大學、SkillsFuture</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>TALIS 2024</b>教師壓力高於OECD平均</div>
+        <div class="stat-pill"><b>EdTech 2030</b>科技教育藍圖</div>
+        <div class="stat-pill"><b>SLS</b>全國學生學習平台</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>教師工作量和壓力：</strong>TALIS 2024：新加坡教師工時和壓力均高於OECD平均，AI工具本應減輕工作量，但國會議員質詢指出實際上「AI增加了要學的東西，但沒有減少要做的事」</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>學生AI倫理教育：</strong>AI生成假猥褻圖片在學校出現，網絡霸凌新形態需要MOE迅速建立指引和支援系統</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>高能力學習者（HAL）教育改革：</strong>2024年MOE宣布重大改革，擴大至10%學生（原GEP模式），需要教師培訓和課程調整</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>SkillsFuture真實落地：</strong>MOE統籌SkillsFuture，但課程設計和培訓質量參差不齊，能否真正幫助40-50歲的轉型工人仍受質疑</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，教育是塑造靈魂的地方。求你讓MOE在推動AI教育的同時，不忘問那個最重要的問題：我們在培育什麼樣的人？讓Ekklesia信徒教師不被工作量壓垮，仍有力量真正看見每一個學生。讓SkillsFuture真正成為那位50歲銀行職員的出路，而非只是政策文件上的計劃。</p>
+      </div>
+      <div class="src">來源：MOE國會回答（2025年11月）、GovTech數字學習文章、TALIS 2024報告</div>
+    </div>
+  </div>
+
+  <!-- MSE -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🌿</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">可持續發展及環境部（MSE）· Ministry of Sustainability & the Environment</div>
+        <div class="mcard-meta">部長：傅海燕（Grace Fu）· 轄下：NEA、PUB、SFA</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>S$8億去碳化大挑戰：</strong>雄心勃勃的計劃，但去碳化成本（如碳稅、能源轉型）對低收入家庭和中小企業的衝擊缺乏具體保障機制</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>食品安全多源中斷風險：</strong>國會議員追問若多個食品進口來源同時中斷的應急計劃，MSE尚未公開具體細節</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>海平面上升威脅：</strong>長期氣候變化對低窪地區的威脅需要巨額基礎設施投資，MSE與MND需要跨部門協調</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>登革熱和氣候相關健康風險：</strong>氣溫上升加劇蚊患，MOH發出登革熱警示，MSE的環境管理壓力增加</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">求神讓新加坡的環境政策，真正反映對神創造的尊重和對後代的責任。讓去碳化的目標，不以犧牲低收入家庭的生活質量為代價。讓Ekklesia信徒在MSE、NEA、PUB工作的人，以管家的心態服事，守護這座蕞爾小島的環境遺產。</p>
+      </div>
+      <div class="src">來源：國會議員質詢（2026年4月）、MSE政策文件</div>
+    </div>
+  </div>
+
+  <!-- MCCY -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🤝</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">文化、社區及青年部（MCCY）· Ministry of Culture, Community & Youth</div>
+        <div class="mcard-meta">部長：唐振輝（Edwin Tong）· 轄下：NAC、新聞局、體育局、社區發展理事會</div>
+      </div>
+      <div class="mcard-tag t-govt">政府部門</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>新移民整合計劃（PR Journey）：</strong>2025年11月試點，2026年中推廣至所有新PR，僅靠e-learning module被批評力度不足，缺乏真實社區接觸機會</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI衝擊下的社區凝聚力：</strong>AI帶來的財富不均可能加劇族群和階層隔閡，MCCY需要加強跨族群、跨階層的社區黏合工作</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>青年精神健康危機：</strong>學術和就業壓力加劇，青年精神健康問題上升，MCCY的青年事務需要與MOE和MOH更緊密協調</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>文化身份在數字時代的定位：</strong>AI生成內容衝擊在地文化創作，MCCY需支援本地藝術家和文化工作者在新環境中的生存</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">神啊，你從一血脈造出萬族萬民。求你讓MCCY的工作，真正建立新加坡各族群之間的真實連結，而非只是表面的和諧。讓新移民整合計劃超越e-learning，帶來真實的相遇。讓Ekklesia信徒在社區發展理事會和文化機構中，成為社區凝聚力的推動者。</p>
+      </div>
+      <div class="src">來源：MCCY新移民整合計劃報道、IPS 2025宗教身份研究</div>
+    </div>
+  </div>
+
+  <!-- MND -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🏠</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">國家發展部（MND）· Ministry of National Development</div>
+        <div class="mcard-meta">部長：李智陞（Desmond Lee）· 轄下：HDB、URA、BCA、NParks</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>55,000</b>2025-2027年BTO單位目標</div>
+        <div class="stat-pill"><b>4,000+</b>2026年百萬元HDB成交</div>
+        <div class="stat-pill"><b>22季</b>HDB二手價格連升22季</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>住房可負擔性持續惡化：</strong>百萬元HDB二手交易屢創新高，BTO供應雖增加但建成需時，年輕夫婦面對等待期和首付壓力雙重困境</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>TFR 0.87的住房政策回應：</strong>生育率新低要求更針對性的家庭友善住房政策，現有BTO申請優先次序和等待期是否配合家庭需求受到質疑</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>殘障人士社區住房：</strong>與MSF合作開發「就地老化」住房模式，現有組屋設計和無障礙設施仍不足</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>氣候韌性基礎設施：</strong>海平面上升要求重新規劃沿海地區，BCA（建築局）需更新建築標準以應對極端天氣</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，「家」是你為人所設立的第一個社區。求你讓MND的每一個住房政策決定，都以普通家庭的真實需要為核心。讓那對「結婚三年組屋還在等」的年輕夫婦，不因等待而放棄生育的心志。讓55,000個BTO單位不只是數字，而是真實成為了年輕家庭的家。</p>
+      </div>
+      <div class="src">來源：MND政策公告、HDB市場報告2026、政府人口部門聲明</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ PANEL 2: 法定機構 ══════════════════ -->
+<div class="panel" id="p2">
+
+  <div class="slabel">年長者守望</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👴</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">年長者守望 · Age Well SG · 銀齡辦事處 · AIC（樂齡綜合服務）</div>
+        <div class="mcard-meta">隸屬 MOH · MSF · MCCY · 社區發展理事會</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>789,580</b>65歲以上長者（2025年）</div>
+        <div class="stat-pill"><b>18.8%</b>居民人口佔比</div>
+        <div class="stat-pill"><b>87,200</b>獨居長者戶數（2024年）</div>
+        <div class="stat-pill"><b>2026年</b>正式「超老齡社會」</div>
+        <div class="stat-pill"><b>10%</b>60歲以上患失智症（51,934人）</div>
+        <div class="stat-pill"><b>30%</b>失智症照顧者辭職照顧</div>
+        <div class="stat-pill"><b>64歲</b>2026年7月退休年齡提升</div>
+        <div class="stat-pill"><b>2030年</b>1/4人口將達65歲以上</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>獨居長者孤獨危機：</strong>獨居長者戶數十年翻倍至87,200戶，2030年料達122,000戶。衛生部長稱孤獨是「最大的敵人」，長期孤獨對健康傷害等同每天吸煙一包</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>失智症照顧危機：</strong>51,934名失智症長者，照顧者平均每週付出42小時，30%辭職照顧，照顧者抑鬱風險達34%</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>退休年齡提升至64歲（2026年7月）：</strong>長者需繼續工作但面對職場年齡歧視，再就業年齡提升至69歲，CPF領取年齡仍維持65歲</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Age Well SG計劃落實：</strong>超過20,000名長者受惠於社區活躍樂齡計劃，但社區護理資源和人手仍不足以應對超老齡社會的需求</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>夾心世代照顧壓力：</strong>中年PMET同時面對職場裁員壓力和照顧年邁父母的重擔，是新加坡最隱形的脆弱群體之一</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，你說白髮是榮耀的冠冕。在新加坡成為「超老齡社會」的這一年，求你讓Ekklesia成為長者的守護者。讓Ekklesia信徒走進組屋、走進安老院、走進醫院病房，帶去真實的同在而非例行探訪。讓失智症照顧者在Ekklesia群體中找到喘息和支援。讓Age Well SG不只是政府計劃，也成為Ekklesia以行動落實的使命——因為耶穌說「我在那裡，服事我的人也要在那裡」。</p>
+      </div>
+      <div class="src">來源：MOH Age Well SG、新加坡統計局（2025年）、國會質詢MOH（2026年1月）、NBER老齡化報告、CPF局</div>
+    </div>
+  </div>
+
+
+  <div class="slabel">兒童與幼兒守望</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👶</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">兒童與幼兒守望 · ECDA、KKH、KidSTART</div>
+        <div class="mcard-meta">隸屬 MSF · ECDA（幼兒發展署）· MOH · MOE</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>23,000</b>幼兒教育工作者</div>
+        <div class="stat-pill"><b>200,000+</b>全日制幼兒園名額</div>
+        <div class="stat-pill"><b>0.87</b>TFR——每個孩子更珍貴</div>
+        <div class="stat-pill"><b>2歲前</b>螢幕時間影響腦發育（A*STAR研究）</div>
+        <div class="stat-pill"><b>KidSTART</b>低收入家庭0-6歲整合支援</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>嬰幼兒螢幕時間危機：</strong>A*STAR × NUS 2025年12月研究——2歲前過多螢幕時間與青少年腦部改變、焦慮症直接相關。MOH發布指引，但執行依賴家長</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>幼兒教育師資缺口：</strong>23,000名幼兒教育工作者中仍有缺口，薪酬偏低，ESR建議提升但落實速度受關注</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>低收入兒童機會不平等：</strong>KidSTART計劃支援低收入家庭0-6歲兒童，Budget 2026提升補貼收入上限至S$15,000（2027年起）</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI伴侶與兒童情感健康：</strong>72%青少年曾使用AI伴侶，三分之一用於情感支援——孤獨兒童轉向AI的趨勢需要Ekklesia回應</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>父母失業壓力對兒童的衝擊：</strong>14,400人被裁員，孩子是家庭壓力的隱形承受者——情緒健康問題在兒童中上升</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主耶穌，你說「讓小孩子到我這裡來，不要禁止他們，因為在神國的，正是這樣的人」。求你讓新加坡的每一個孩子——在TFR 0.87的稀少中——都成為被珍視、被愛護、被看見的生命。讓ECDA的政策真正落實，讓KidSTART計劃觸及最邊緣的家庭。讓Ekklesia信徒在兒童事工中全力投入，成為這城市孩子遇見真愛的橋樑。</p>
+      </div>
+      <div class="src">來源：A*STAR IHDP/NUS研究（2025年12月）、ECDA、MSF COS 2026、ESR最終建議</div>
+    </div>
+  </div>
+
+
+
+  <div class="slabel">第二屆黃循財內閣 · 2025年5月23日就職</div>
+
+  <!-- 內閣完整名單 -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👑</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">協調部長 · Coordinating Ministers</div>
+        <div class="mcard-meta">統籌跨部門政策的最高決策層 · 2025年5月23日就職</div>
+      </div>
+      <div class="mcard-tag t-govt">內閣</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>顏金勇 Gan Kim Yong — 副總理</strong><br>主管ESR落實、貿工部、AI國家戰略；ESR五個委員會全程主持人</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>尚穆根 K. Shanmugam — 國家安全統籌部長兼內政部長</strong><br>主管國家安全、法律與秩序、網絡安全</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>吳義遠 Ong Ye Kung — 社會政策統籌部長兼衛生部長</strong><br>統籌醫療、教育、包容性政策；明確指出孤獨是長者「最大敵人」</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>陳振聲 Chan Chun Sing — 公共服務統籌部長</strong><br>新設職位；主管公共服務改革、政府效率；強調公務員需「理解科技、理解世界、理解新加坡人」</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，求你讓這四位統籌部長在各自的領域，帶著超越人的智慧作決策。讓顏金勇在ESR落實中不忘那些被遺下的工人；讓吳義遠在社會政策中真正聽見老人、兒童和弱勢的聲音；讓陳振聲的公共服務改革以服事人民為核心，而非只是提升效率。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🏛️</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">主要部長 · Key Ministers</div>
+        <div class="mcard-meta">第二屆黃循財內閣完整名單 · 2025年5月23日</div>
+      </div>
+      <div class="mcard-tag t-govt">內閣</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:12px;">
+        <tr style="background:rgba(201,168,76,.1);">
+          <th style="padding:7px 9px;text-align:left;color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;border-bottom:1px solid rgba(201,168,76,.2);">部長</th>
+          <th style="padding:7px 9px;text-align:left;color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;border-bottom:1px solid rgba(201,168,76,.2);">部門</th>
+          <th style="padding:7px 9px;text-align:left;color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;border-bottom:1px solid rgba(201,168,76,.2);">守望重點</th>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">黃循財 Lawrence Wong</td>
+          <td style="padding:7px 9px;color:var(--muted);">總理兼財政部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">國家整體方向、Budget 2026落實、ESR推動</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">李智陞 Desmond Lee</td>
+          <td style="padding:7px 9px;color:var(--muted);">教育部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">AI教育整合、SkillsFuture、終身學習改革</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">鄭德順 Chee Hong Tat</td>
+          <td style="padding:7px 9px;color:var(--muted);">國家發展部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">HDB 55,000個BTO單位、住房可負擔性</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">陳詩龍 Tan See Leng</td>
+          <td style="padding:7px 9px;color:var(--muted);">人力部長兼能源科技部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">裁員保護、外勞政策、SWDA、能源轉型</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">馬紹基 Masagos Zulkifli</td>
+          <td style="padding:7px 9px;color:var(--muted);">社會及家庭發展部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">TFR 0.87生育危機、ComLink+、低收入家庭</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">楊莉明 Josephine Teo</td>
+          <td style="padding:7px 9px;color:var(--muted);">數字發展及新聞部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">AI治理、POFMA、媒體監管、數字包容</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">維文 Vivian Balakrishnan</td>
+          <td style="padding:7px 9px;color:var(--muted);">外交部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">地緣政治定位、「說不的能力」、區域整合</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">傅海燕 Grace Fu</td>
+          <td style="padding:7px 9px;color:var(--muted);">可持續發展及環境部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">S$8億去碳化、食品安全、氣候韌性</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">唐振輝 Edwin Tong</td>
+          <td style="padding:7px 9px;color:var(--muted);">律政部長兼第二內政部長</td>
+          <td style="padding:7px 9px;color:var(--muted);">工人權益保護、媒體誹謗訴訟、法治</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">David Neo（代理）</td>
+          <td style="padding:7px 9px;color:var(--muted);">文化、社區及青年部</td>
+          <td style="padding:7px 9px;color:var(--muted);">新移民整合、青年精神健康、文化凝聚</td>
+        </tr>
+        <tr style="background:rgba(255,255,255,.02);">
+          <td style="padding:7px 9px;color:var(--text);font-weight:500;">Jeffrey Siow（代理）</td>
+          <td style="padding:7px 9px;color:var(--muted);">交通部兼財政部</td>
+          <td style="padding:7px 9px;color:var(--muted);">RTS柔佛影響、港口航空、財政政策</td>
+        </tr>
+      </table>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，求你讓第二屆黃循財內閣的每一位部長，在各自的崗位上帶著對人民真實的愛作決策。讓陳詩龍在人力部保護每一個被裁員的工人；讓馬紹基在社家部真正看見每一個低收入家庭；讓楊莉明在媒體監管中守護真實和公義。讓Ekklesia信徒在每個部門中，成為這份愛的守護者。</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="slabel">女部長守望 · Women Ministers</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👩‍💼</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">英蘭妮 Indranee Rajah · 總理公署部長</div>
+        <div class="mcard-meta">兼第二財政部長 · 第二國家發展部長 · 國會院長 · Pasir Ris-Changi GRC議員</div>
+      </div>
+      <div class="mcard-tag t-govt">女部長</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>TFR 0.87</b>她主管的婚育危機</div>
+        <div class="stat-pill"><b>M&P Reset</b>婚育重組工作組主席</div>
+        <div class="stat-pill"><b>國會院長</b>第15屆國會</div>
+        <div class="stat-pill"><b>4th</b>新加坡史上第4位女部長</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>婚育危機最前線：</strong>英蘭妮在2026年人口學會會議上坦言：「TFR跌至0.87，我們已是超老齡社會，這些趨勢將深刻改變新加坡。我們今天的決定，決定六十年後這座城市的面貌。」她主持跨部門婚育重組工作組，面對的是新加坡最棘手的結構性挑戰</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>彈性工作安排推動者：</strong>她推出「彈性工作安排申請三方指引」，嘗試在工作與家庭之間為員工創造空間，但僱主配合度仍是最大挑戰</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>國會院長的政治壓力：</strong>她主持了Pritam Singh被宣告不適任的國會動議，面對工人黨全體反對；需在維護國會秩序和政治公正之間保持平衡</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>綠色債券和財政政策：</strong>主席綠色債券指導委員會，推動新加坡綠色金融框架落實，同時面對去碳化成本對低收入家庭的衝擊</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，求你讓英蘭妮在面對TFR 0.87這個幾乎無解的挑戰時，不只看見統計數字，而是看見每一個因住房、工作、照顧負擔而不敢生育的年輕夫婦。讓她的婚育政策從心出發，而非只是人口管理。讓她在國會院長的職位上，主持公義而非黨派利益。讓Ekklesia信徒為她代禱，也用行動支持新加坡的家庭政策。</p>
+      </div>
+      <div class="src">來源：PMO官網、英蘭妮2026年人口學會會議演講（2026年5月）、國會記錄</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">💻</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">楊莉明 Josephine Teo · 數字發展及新聞部長</div>
+        <div class="mcard-meta">兼網絡安全局及智慧國家計劃主管 · Jalan Besar GRC議員</div>
+      </div>
+      <div class="mcard-tag t-govt">女部長</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>75%+</b>企業已整合AI（IMDA 2025）</div>
+        <div class="stat-pill"><b>第123</b>RSF新聞自由排名</div>
+        <div class="stat-pill"><b>Fortune</b>2025年亞太最具影響力女性之一</div>
+        <div class="stat-pill"><b>POFMA</b>持續運用於媒體更正</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI治理與新聞自由的雙重張力：</strong>楊莉明同時推動AI發展和監管媒體，被Fortune列為亞太最具影響力女性，但RSF新聞自由排名持續下跌至第123位，POFMA的使用引發批評</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI假圖在學校蔓延：</strong>2026年5月需在國會回應AI生成假猥褻圖片在學校出現的問題，正研究通過網絡安全委員會（OSC）應對</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>數字包容性挑戰：</strong>老年人、低收入群體在數字轉型中被邊緣化的風險，GovTech數字服務的可及性問題</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>媒體誹謗訴訟的陰影：</strong>兩名部長就彭博社報道提出訴訟尚未解決，對媒體生態的影響持續</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，楊莉明肩負著塑造新加坡數字未來的重任。求你讓她在推動AI和數字發展的同時，也守護真實的信息環境，讓媒體監管不成為壓制公義聲音的工具。讓她在面對AI假圖傷害兒童的問題時，以保護每一個孩子的心意作決策。讓Ekklesia信徒在數字和AI領域為她代禱，也為她的決策帶入神國的公義。</p>
+      </div>
+      <div class="src">來源：IMDA、Josephine Teo維基百科、RSF 2026報告、國會記錄（2026年5月）、Fortune Asia-Pacific最具影響力女性（2025年10月）</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🌿</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">傅海燕 Grace Fu · 可持續發展及環境部長</div>
+        <div class="mcard-meta">主管NEA · PUB · SFA · Sembawang GRC議員</div>
+      </div>
+      <div class="mcard-tag t-govt">女部長</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>S$8億</b>去碳化大挑戰</div>
+        <div class="stat-pill"><b>2030年</b>碳稅提升目標</div>
+        <div class="stat-pill"><b>登革熱</b>2026年MOH警示</div>
+        <div class="stat-pill"><b>海平面</b>長期上升威脅</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>去碳化成本的公平分擔：</strong>S$8億去碳化大挑戰和碳稅政策是重要的環境政策，但傅海燕面臨的最大挑戰是確保去碳化成本不過度轉嫁至低收入家庭和中小企業</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>食品安全多源中斷風險：</strong>國會議員質詢若多個食品進口來源同時中斷的應急計劃，SFA（新加坡食品局）需完善多元化儲備機制</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>登革熱和氣候健康威脅：</strong>氣溫上升加劇蚊患，2026年MOH和NEA聯合發出登革熱警示，環境管理壓力增加</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>海平面上升的長期規劃：</strong>需與MND跨部門協調，為低窪地區制定長達百年的海岸保護計劃，涉及數百億投資</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，傅海燕所管理的，是你所創造的這片土地和海洋。求你讓她在制定環境政策時，帶著對神創造的尊重和對後代的責任感。讓去碳化的目標不以犧牲低收入家庭的生活質量為代價。讓Ekklesia信徒以「地球管家」的身分，在日常生活中支持她的環境政策，讓口裡的守望也成為腳下的行動。</p>
+      </div>
+      <div class="src">來源：MSE官網、NEA、SFA、國會議員質詢（2026年4月）</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👩‍⚖️</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">女性高級政務部長及議員 · 守望名單</div>
+        <div class="mcard-meta">2025年GE創下40.6%女性候選人紀錄 · 9位女性政治任命官員</div>
+      </div>
+      <div class="mcard-tag t-stat">女性領袖</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Sun Xueling — 高級政務部長（人力部、社家部）：</strong>主管低收入家庭支援和工人再培訓，是政策落實到基層的關鍵人物</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Sim Ann — 高級政務部長（通訊及新聞部、國家發展部）：</strong>主管媒體政策和住房，在新聞自由和住房可負擔性兩大敏感議題上直接參與</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Gan Siow Huang — 政務部長（人力部、教育部）：</strong>主管工人技能提升和教育政策，SkillsFuture和學校AI整合的直接執行者</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Sylvia Lim（工人黨）— 阿裕尼GRC議員：</strong>工人黨主席，持續就民生議題追問政府；2025年GE後繼續在國會為弱勢發聲</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>He Ting Ru（工人黨）— 盛港GRC議員：</strong>工人黨副主席，專注於生活成本、工人權益和社會公義議題</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，感謝你讓更多女性領袖在新加坡的政治舞台上服事。求你讓她們——無論是執政黨還是反對黨——都以對人民真實的愛和公義的心作決策。讓Sun Xueling在服事低收入家庭時帶著真實的同理；讓Sylvia Lim和He Ting Ru在國會的問責工作中帶著智慧和品格。讓Ekklesia信徒為每一位女性領袖代禱，求神賜她們智慧、保守她們的家庭，讓她們在公共服務的重擔中仍有神的力量。</p>
+      </div>
+      <div class="src">來源：PMO官網、Must Share News（2025年5月）、工人黨官網、國會記錄</div>
+    </div>
+  </div>
+
+
+  <div class="slabel">第15屆國會 · 在野黨與問責機制</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🗳️</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">第15屆國會 · 反對黨議員守望</div>
+        <div class="mcard-meta">2025年9月5日開幕 · 97名民選議員 · 工人黨12席</div>
+      </div>
+      <div class="mcard-tag t-stat">國會</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>87席</b>人民行動黨（PAP）</div>
+        <div class="stat-pill"><b>10席</b>工人黨（民選）</div>
+        <div class="stat-pill"><b>2席</b>工人黨（非選區議員）</div>
+        <div class="stat-pill"><b>65.6%</b>PAP得票率</div>
+        <div class="stat-pill"><b>15.0%</b>工人黨得票率</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>工人黨（Workers' Party）：</strong>在Budget 2026辯論中質疑大額盈餘下仍加徵GST；倡議人本AI策略、更強工人保護、中小企業支援；Sylvia Lim、Faisal Manap、He Ting Ru等議員持續就民生議題追問政府</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>進步新加坡黨（PSP）：</strong>以外籍人才政策、生活成本為主要議題；非選區議員繼續在國會發聲</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Pritam Singh事件：</strong>2026年1月14日國會通過動議宣告其不適合擔任反對黨領袖；工人黨12名議員全體反對；引發民主問責的廣泛討論</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>國會的守望功能：</strong>反對黨議員提出的裁員保險、AI工人保護、年長者照顧等議題，是Ekklesia信徒守望的具體事項</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，求你讓第15屆國會成為真正服事人民的殿堂。讓執政黨的議員不因多數席位而失去對弱勢的關懷；讓反對黨的議員在問責政府時，以公義而非政治利益為動力。讓每一場辯論——無論是AI就業、裁員保護、還是年長者照顧——都真正帶出改變人民生活的政策。讓Ekklesia信徒在守望國會的同時，也為每一位議員的品格和智慧代禱。</p>
+      </div>
+      <div class="src">來源：第15屆國會維基百科、工人黨官網、PMO內閣公告（2025年5月）</div>
+    </div>
+  </div>
+
+
+  <div class="slabel">就業與勞動力相關法定機構</div>
+
+  <!-- WSG / SkillsFuture -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🎯</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">職能再培訓署（WSG）及 SkillsFuture 新加坡（SSG）</div>
+        <div class="mcard-meta">隸屬 MOM · 即將被整合進新成立的 SWDA（技能與勞動力發展局）</div>
+      </div>
+      <div class="mcard-tag t-stat">法定機構</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>超過一半</b>工人認識到需在AI時代提升技能（SSG 2026）</div>
+        <div class="stat-pill"><b>S$13.6百萬</b>CTC Grant已承諾（至2025年12月）</div>
+        <div class="stat-pill"><b>100+</b>AI相關企業培訓計劃</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>「能力強的人才能用SkillsFuture」：</strong>現有培訓計劃往往被已有較強能力的工人使用，真正需要幫助的基層工人、低學歷工人反而難以觸及</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>SWDA整合過渡期：</strong>ESR建議把WSG、SSG和MOM相關職能整合為SWDA，整合過程中服務銜接和人員過渡存在風險</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>SkillsFuture Level-Up資格門檻：</strong>現針對40歲以上工人，但AI衝擊35歲已開始，NCMP Andre Low呼籲降低至35歲，政府尚未採納</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>課程質量和就業轉化率：</strong>完成SkillsFuture課程的工人能否真正找到新工作，數據有限且備受質疑</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">父神，求你讓SkillsFuture不只服務那些已有能力的人，而是真正到達最需要的那位精疲力竭、不知從何開始的40歲工人。讓SWDA的整合不只是機構重組，而是真正以「服事每一個工人」為核心使命。讓35歲到55歲面對轉型的一代，在這個系統中找到真實的出路。</p>
+      </div>
+      <div class="src">來源：ESR最終建議、NTUC AI-Ready SG計劃、國會NCMP發言（2026年2月）</div>
+    </div>
+  </div>
+
+  <!-- EDB -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">📈</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">經濟發展局（EDB）· Economic Development Board</div>
+        <div class="mcard-meta">隸屬 MTI · 負責吸引外資、發展關鍵行業</div>
+      </div>
+      <div class="mcard-tag t-stat">法定機構</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>S$142億</b>2025年投資承諾</div>
+        <div class="stat-pill"><b>15,700</b>預計創造職位</div>
+        <div class="stat-pill"><b>60+</b>AI卓越中心</div>
+        <div class="stat-pill"><b>S$121億</b>來自製造業</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>投資質量 vs 數量：</strong>龐大投資承諾數字背後，能否真正轉化為本地PMET的優質就業仍有待驗證；高科技投資偏向引進人才而非培訓本地人</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI卓越中心的本地化：</strong>60多個AI卓越中心以國際巨頭為主（Grab、格芯等），本地中小企業和研究機構的參與深度不足</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>製造業2030願景的落實壓力：</strong>目標在10年內將製造業附加值提升50%，進度受全球供應鏈中斷和貿易戰影響</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">求神讓EDB吸引的每一項投資，都帶來真正惠及本地工人的優質職位。讓「S$142億投資承諾」不只是宣傳數字，而是轉化為每一個普通新加坡人可以感受到的就業機會。讓Ekklesia信徒在EDB中成為關注投資社會影響力的聲音。</p>
+      </div>
+      <div class="src">來源：EDB年度報告2025、MTI投資承諾聲明</div>
+    </div>
+  </div>
+
+  <!-- MAS -->
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🏦</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">新加坡金融管理局（MAS）· Monetary Authority of Singapore</div>
+        <div class="mcard-meta">隸屬 PMO · 中央銀行及金融監管機構</div>
+      </div>
+      <div class="mcard-tag t-stat">法定機構</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Project MindForge（AI金融應用）：</strong>MAS與DBS、OCBC、UOB、渣打、花旗等多家銀行共同推進AI在金融業的應用，需同時確保系統安全和工人保護</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI裁員時間表的監管責任：</strong>渣打公開「2030年裁7,000職」計劃後，MAS作為監管機構如何確保銀行在AI轉型中履行對工人的責任</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>金融科技創新與消費者保護：</strong>區塊鏈、AI銀行解決方案迅速發展，MAS需平衡創新空間與消費者和系統安全</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Singapore列為全球AI金融中心第三位：</strong>DBS報告將新加坡列為全球AI金融樞紐第三位（僅次紐約、三藩市），MAS需維持這一地位同時管理風險</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，金融監管的核心是對「信任」的守護。求你讓MAS在推動AI金融創新的同時，記得那些後台職位即將消失的銀行職員。讓MAS的監管框架，不只保護系統穩定，也保護工人的生計。讓Ekklesia信徒在MAS中成為提醒機構不忘人的聲音。</p>
+      </div>
+      <div class="src">來源：MAS Project MindForge、DBS AI金融報告2026、Fintech Singapore</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ PANEL 3: 金融業 ══════════════════ -->
+<div class="panel" id="p3">
+
+  <div class="slabel">銀行業 · AI轉型與裁員的真實圖景</div>
+
+  <table class="ctable">
+    <tr><th>機構</th><th>AI轉型行動</th><th>裁員影響</th><th>守望評估</th></tr>
+    <tr>
+      <td>DBS（星展銀行）</td>
+      <td>800個AI模型、350個應用場景；全行40,000人AI培訓；創建「AI代理監控經理」等新職位</td>
+      <td>削減4,000個合約及臨時職位（3年）；2025年整體員工跌3.9%（1,624人）</td>
+      <td class="warn">轉型+裁員並行，是政府推崇的「模式」，但合約工人最先受衝擊</td>
+    </tr>
+    <tr>
+      <td>渣打銀行（StanChart）</td>
+      <td>AI自動化後台合規、行政和文件處理；支持NUS高管AI培訓計劃</td>
+      <td>2030年前裁減7,000個後台職位——首家公開將AI裁員計劃時間表化的大型銀行</td>
+      <td class="bad">影響最大、最具代表性，大量中年PMET受衝擊</td>
+    </tr>
+    <tr>
+      <td>OCBC（華僑銀行）</td>
+      <td>多數員工已接受AI、數字或數據能力培訓</td>
+      <td>2025年員工人數下滑，整體三大行合共削減約3,000職位</td>
+      <td class="warn">培訓力度較大，但裁員仍在進行</td>
+    </tr>
+    <tr>
+      <td>UOB（大華銀行）</td>
+      <td>鼓勵員工在日常工作中整合AI工具以提升效率</td>
+      <td>參與三大行整體裁員趨勢</td>
+      <td class="warn">相對較少公開具體裁員計劃</td>
+    </tr>
+    <tr>
+      <td>Grab（格域）</td>
+      <td>AI卓越中心之一；在物流、支付、食物配送廣泛應用AI</td>
+      <td>2023年已有裁員，2025-2026持續重組</td>
+      <td class="warn">外賣送餐員、車手受自動化影響最大（非PMET層）</td>
+    </tr>
+    <tr>
+      <td>Singtel（新電信）</td>
+      <td>網絡AI化、客戶服務自動化</td>
+      <td>客戶服務中心人手持續縮減</td>
+      <td class="bad">客服中心工人（非PMET）最脆弱，再培訓機會少</td>
+    </tr>
+  </table>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🔴</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">金融業整體守望：「AI利益歸誰？」</div>
+        <div class="mcard-meta">NCMP Andre Low 在Budget 2026辯論中的核心質問</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI利益分配不均：</strong>DBS透過AI節省成本超過S$10億（2025年），但被削減的4,000合約工人得不到這些利益</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>裁員保險缺席：</strong>工人黨多屆國會均提出裁員保險，政府至今未採納，銀行業大規模裁員讓這個缺口更顯急迫</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>「提前通知」文化缺失：</strong>即使銀行知道要裁員，工人往往最後一刻才得知，ESR建議的「提前通知」在銀行業落實面對阻力</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>合約工人保護最薄：</strong>DBS 4,000個削減職位中，以合約及臨時職位為主，這批人缺乏再培訓支援，是最脆弱的群體</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，金融業的AI革命正在改變數以萬計工人的命運。求你感動銀行的董事局和CEO，在追求AI效益的同時，記得那些被削減職位的工人——他們也是股東之外的「持份者」。讓Ekklesia信徒在這些機構的領導層中成為憐憫的聲音。求神讓「AI利益歸誰」這個問題，成為新加坡社會認真回答的問題，而非只是政治修辭。</p>
+      </div>
+      <div class="src">來源：People Matters Global（2026年4月）、Fintech Singapore、NCMP Andre Low國會發言</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ PANEL 4: 製造與科技 ══════════════════ -->
+<div class="panel" id="p4">
+
+  <div class="slabel">製造業 · 半導體與先進製造</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🔬</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">半導體與先進製造業</div>
+        <div class="mcard-meta">格芯（GlobalFoundries）、Applied Materials、台積電、美光、西門子等</div>
+      </div>
+      <div class="mcard-tag t-sector">行業</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>+33</b>電子業信心指數（2025年Q4，最高）</div>
+        <div class="stat-pill"><b>AI需求</b>驅動半導體持續增長</div>
+        <div class="stat-pill"><b>-35</b>精密工程業信心指數（最弱）</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>AI驅動的半導體需求旺盛：</strong>電子業連續6個月擴張，AI伺服器和元件需求強勁，但精密工程業因全球不確定性訂單延誤而疲軟</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>美國半導體關稅風險：</strong>2026年起美國關稅可能影響新加坡的電子出口，製造業前景面臨下行風險</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>技術工人需求 vs 供應缺口：</strong>半導體業需要高技能工程師，但本地供應有限，高度依賴外籍專才；初級技術崗位因自動化面臨壓力</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>量子科技新賭注：</strong>ESR將量子科技列為重點投資，Quantinuum 2026年3月宣布在新加坡設研發中心，長期潛力大但商業化時間長</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">求神讓新加坡在半導體和量子科技領域的發展，不只是GDP的數字增長，也能為本地工人創造真實的技能提升機會。讓在製造業工作的Ekklesia信徒，在高壓的生產環境中仍保有對同事的尊重和對工作的使命感。讓量子科技的突破，用於造福人類，而非只是地緣政治競爭的工具。</p>
+      </div>
+      <div class="src">來源：新加坡製造業信心指數（Q4 2025）、ESR建議、製造業PMI報告</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🤖</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">AI與科技企業 · 初級技術崗位的危機</div>
+        <div class="mcard-meta">Google、Meta、Amazon、Grab、SEA（蝦皮）及本地科技初創企業</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>79%</b>新加坡企業已部署AI代理（Workday研究）</div>
+        <div class="stat-pill"><b>26%</b>知識工作者對AI最感不確定（ADP）</div>
+        <div class="stat-pill"><b>初級ICT</b>是最高風險崗位之一</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>初級工程師「職業底層斷裂」：</strong>AI代碼生成工具壓縮入門級需求，剛畢業的電腦科學生面對進入職場的「斷梯」，NCMP Andre Low在國會明確提出此問題</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>知識工作者最不確定：</strong>ADP研究顯示知識工作者（創意和專業角色）對AI影響的不確定感最高，達26%，超過其他崗位</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>大科技公司全球裁員波及新加坡：</strong>Google、Meta、Amazon等跨國科技公司的全球性裁員週期，對新加坡辦公室造成直接衝擊</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>轉型 vs 採用的鴻溝：</strong>KPMG指出，企業往往停留在AI「試驗」階段，未能轉化為全企業的生產力提升；69%僱主認為提升技能重要，但行動不足</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">父神，那些剛從大學電腦系畢業，卻發現「底層梯子斷裂」的年輕人，你看見他們的迷茫。求你讓他們在這個時代找到自己獨特的位置——不只是學會用AI工具，而是學會以神給的創意和同理心，做AI做不到的事。讓教會成為年輕Ekklesia信徒在職業迷失中重新找到方向的地方。</p>
+      </div>
+      <div class="src">來源：KPMG Budget 2026分析、Workday研究、ADP People at Work 2025、NCMP Andre Low發言</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ PANEL 5: 零售與服務 ══════════════════ -->
+<div class="panel" id="p5">
+
+  <div class="slabel">零售業 · RTS衝擊與數字化轉型</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🛍️</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">實體零售業 · 新柔RTS的雙重衝擊</div>
+        <div class="mcard-meta">新加坡零售商、霸級市場、F&B、郊區商場（特別是北部地區）</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="stats-row">
+        <div class="stat-pill"><b>S$2.1億</b>預計零售流失（RTS通車後）</div>
+        <div class="stat-pill"><b>4%</b>佔新加坡年零售額</div>
+        <div class="stat-pill"><b>S$6.2億</b>F&B潛在損失</div>
+        <div class="stat-pill"><b>2027年</b>RTS通車（正式衝擊年）</div>
+        <div class="stat-pill"><b>3百萬</b>新加坡人2026年首兩月已到訪JB</div>
+      </div>
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>新柔快速交通系統（RTS）通車倒計時：</strong>預計2027年通車（原定2026年），DBS估計每年流失S$2.1億零售額，F&B和超市影響最大；北部郊區商場（FCT旗下）最脆弱</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>同時面對AI和RTS雙重衝擊：</strong>網上購物已對實體零售構成壓力，RTS再帶來跨境購物競爭，實體零售需要雙線應對</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>政府應對政策力度存疑：</strong>MTI部長顏金勇在回答國會議員質詢時強調企業應「建立新能力」，但具體支援措施被批評不夠具體</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>小販中心和組屋底商小販生存危機：</strong>連鎖商場的衝擊最終波及基層小商販，這批人缺乏企業發展局的資助資格</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">主啊，那些在郊區商場租用小攤位的小販，是新加坡最基層的企業家。求你讓他們在RTS帶來的衝擊中找到出路。讓政府的支援計劃真正觸及這些最小的企業，而非只惠及有資源申請補貼的較大商家。讓Ekklesia的Ekklesia信徒在社區中支持本地小商販，以消費行動守護社區的生命力。</p>
+      </div>
+      <div class="src">來源：DBS零售前景報告2026、Mothership、MTI國會回答</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">🚗</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">平台經濟 · 零工工人的隱形風險</div>
+        <div class="mcard-meta">Grab、Foodpanda、Lalamove、Carousell等平台的外送員、車手、自由工作者</div>
+      </div>
+      <div class="mcard-tag t-urgent">緊急守望</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>零工工人保護缺失：</strong>外送員、車手不屬於僱員，缺乏CPF保護、病假保障、再培訓資助，是AI自動化中最先被取代但最缺乏支援的群體</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>平台演算法決定收入：</strong>AI演算法控制訂單分配，工人缺乏議價能力，收入不穩定但無法組織工會</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Grab車費調整引發質疑：</strong>國會議員追問Grab和ComfortDelGro調整車費前是否諮詢交通部，揭示平台定價的透明度問題</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>自動送餐機器人和無人駕駛的威脅：</strong>平台在測試機器人送餐和自動化物流，對送餐員和司機的長期就業構成威脅</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 守望禱告</div>
+        <p class="prayer-txt">神啊，每一個騎著電動車送外賣的兄弟姐妹，你看見他們頂著風雨還是烈日趕到的身影。求你讓新加坡的平台公司，不把「演算法效率」凌駕於對工人的公平對待之上。感動政府建立更完善的零工工人保護框架，讓他們不成為數字經濟的犧牲品。讓Ekklesia信徒在日常消費中記得善待送餐員。</p>
+      </div>
+      <div class="src">來源：國會議員質詢（2026年Grab車費調整）、MOM零工工人政策</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ PANEL 6: 整合禱告 ══════════════════ -->
+<div class="panel" id="p6">
+
+  <div class="slabel">為各部門和機構的整合守望禱告</div>
+
+  <div class="close-box">
+    <h3>✦ 為新加坡政府全體守望 ✦</h3>
+    <p>
+      主啊，這16個部門、60多個法定機構、150,000名公共服務人員，<br>
+      都是你在新加坡治理架構中放置的人。<br><br>
+      求你讓每一個部門的政策，<br>
+      都帶著對人的真實關懷，<br>
+      讓「不讓任何人掉隊」不只是口號，<br>
+      而是每一個公務員日常工作的標準。<br><br>
+      讓Ekklesia信徒在每一個部門、每一個法定機構、<br>
+      每一間企業中，成為神國的代表——<br>
+      以公義、憐憫和謙遜行走。<br><br>
+      
+    </p>
+  </div>
+
+  <div class="slabel">各行業企業領袖的具體守望</div>
+
+  <div class="mcard" onclick="tc(this)">
+    <div class="mcard-hdr">
+      <div class="mcard-icon">👔</div>
+      <div class="mcard-mid">
+        <div class="mcard-title">為企業領袖求憐憫心 · 完整守望圖景</div>
+        <div class="mcard-meta">DBS模式之外 · 各行業面對的真實挑戰</div>
+      </div>
+      <div class="mcard-tag t-corp">企業</div>
+      <div class="mcard-arr">▼</div>
+    </div>
+    <div class="mcard-body">
+      <div class="challenges">
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>DBS（模式值得借鑑但非完美）：</strong>40,000人AI培訓、創建新職位是值得稱讚的，但同時削減4,000合約職位、合約工人最脆弱的問題仍需守望</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>渣打（最需禱告）：</strong>首家公開裁員時間表化的銀行，2030年前裁7,000後台職位；Ekklesia信徒需為其領導層求憐憫心，也為受影響工人求神開路</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>中小企業主（最孤單的群體）：</strong>獨自面對AI轉型壓力，缺乏大企業的資源和緩衝，許多人既是老闆也是唯一員工；Ekklesia信徒商界網絡的扶持至關重要</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>平台企業（最不透明的群體）：</strong>Grab等平台以演算法管理工人，透明度低，對工人的保護和責任缺乏清晰框架；需要Ekklesia信徒在平台企業中成為良知的聲音</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>小販和基層商販（最被忽視的群體）：</strong>面對RTS和網購雙重衝擊，缺乏申請大型補貼的能力，需要社區支持和Ekklesia信徒的日常消費守望</span></div>
+        <div class="ch-item"><span class="ch-dot">✦</span><span><strong>Grab車手和外送員（無保護網的群體）：</strong>演算法定價、缺乏就業保護、被自動化威脅，卻在現有政策框架中處於盲點</span></div>
+      </div>
+      <div class="prayer">
+        <div class="prayer-lbl">🙏 整合守望禱告</div>
+        <p class="prayer-txt">主啊，求你在新加坡各行業的企業領袖中興起有神國眼光的決策者。讓DBS的模式成為起點而非終點——保護工人的責任不只是在大銀行，也在每一間中小企業、每一個平台公司、每一間小店舖。讓Ekklesia信徒在每一個職場崗位上，以神給的智慧和憐憫，為身邊的人發聲、守護。求神讓「企業領袖的憐憫心」不只是禱告的願望，而是Ekklesia以真實行動塑造的職場文化。</p>
+      </div>
+      <div class="src">來源：綜合多方資料——MOM、NTUC、People Matters、Fintech Singapore、Mothership（2025-2026年）</div>
+    </div>
+  </div>
+
+  <div class="close-box" style="margin-top:16px">
+    <h3>✦ 守望者的宣告 ✦</h3>
+    <p>
+      我們看見了MOM公務員手中的每一份裁員档案，<br>
+      MTI政策文件背後等待轉型的工人，<br>
+      MOH走廊上疲憊的護士，<br>
+      MSF家庭教練拜訪的低收入家庭，<br>
+      渣打後台職員收到裁員信的那一刻，<br>
+      郊區商場小攤販望著空蕩蕩通道的眼神。<br><br>
+      我們把他們一一帶到你的面前。<br>
+      我們是你在這城市城牆上的守望者。<br><br>
+      
+    </p>
+  </div>
+
+</div>
+
+</div><!-- /main -->
+
+
+  </div>
+    </div>
+  </div>
+  </div>
+    
+    
+    
+  </div>
+  <p class="kb-prayer-text"></p>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-m" style="font-family:'Noto Serif TC',serif;font-size:.8rem;letter-spacing:1px;">「你們要先求他的國和他的義，這些東西都要加給你們了。」</div>
+  <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.7rem;letter-spacing:3px;margin-bottom:6px;">— 馬太福音 6:33</div>
+  <div class="footer-s">
+    新加坡 Ekklesia 部門與機構守望資料庫 · 2026年6月本<br>
+    資料來源：SGDI政府目錄 · MOM · MTI · MOH · MSF · MND · MDDI · MCCY · MSE · MAS<br>
+    People Matters · Fintech Singapore · ESR最終建議 · 國會漢沙德 · NTUC · RSF
+  </div>
+</div>
+
+<script>
+function sw(i){
+  document.querySelectorAll('.snav').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  document.querySelectorAll('.snav')[i].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  window.scrollTo({top:document.querySelector('.sec-nav').offsetTop-48,behavior:'smooth'});
+}
+function tc(card){
+  const open=card.classList.contains('open');
+  card.closest('.main').querySelectorAll('.mcard').forEach(c=>c.classList.remove('open'));
+  if(!open) card.classList.add('open');
+}
+</script>
+</body>
+</html>
